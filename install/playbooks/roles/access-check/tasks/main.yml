@@ -7,11 +7,34 @@
     name: sendxmpp
     state: present
 
-- name: Install required packages for access checks
+- name: Install required packages for access checks (Stretch)
+  when:
+    - ansible_facts['distribution'] == "Debian"
+    - ansible_facts['distribution_major_version']|int == 9
   tags: apt
   apt:
     name: '{{ packages }}'
-    state: present
+    default_release: stretch-backports
+    state: latest
+
+- name: Install required packages for access checks (Buster)
+  when:
+    - ansible_facts['distribution'] == "Debian"
+    - ansible_facts['distribution_major_version']|int == 10
+  tags: apt
+  apt:
+    name: '{{ packages }}'
+    default_release: buster-backports
+    state: latest
+
+- name: Install required packages for access checks
+  when:
+    - ansible_facts['distribution'] == "Debian"
+    - ansible_facts['distribution_major_version']|int > 10
+  tags: apt
+  apt:
+    name: '{{ packages }}'
+    state: latest
 
 - name: Deploy the global configuration file for access check settings
   tags: config
