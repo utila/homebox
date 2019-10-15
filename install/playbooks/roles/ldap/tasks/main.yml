@@ -116,6 +116,11 @@
     path: /etc/ldap/changes
     state: directory
 
+- name: Copy the client configuration
+  template:
+    src: ldap.conf
+    dest: /etc/ldap/ldap.conf
+
 ################################################################################
 # At this point, the certificates should have been created already #############
 # in order to have SSL and TLS encryption activated.                           #
@@ -174,11 +179,6 @@
   command: ldapmodify -QY EXTERNAL -H ldapi:/// -f /etc/ldap/changes/ssl-config.ldif
 #                                                                              #
 # End of TLS / SSL Configuration ###############################################
-
-- name: Copy the client configuration
-  template:
-    src: ldap.conf
-    dest: /etc/ldap/ldap.conf
 
 # Activate password policies
 - name: Copy deref module loading into the changes directory
