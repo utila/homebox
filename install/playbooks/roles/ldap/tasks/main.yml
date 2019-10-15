@@ -510,9 +510,18 @@
       - inetLocalMailRecipient
       - mailboxRelatedObject
 
+- name: Install the required packages for interactive login
+  vars:
+    pkgs:
+      - libnss-ldapd
+      - libpam-ldapd
+  apt:
+    name: '{{ pkgs }}'
+    state: present
+
 - name: Configure libnss to use passwords and groups
   debconf:
-    name: libnss-ldap
+    name: libnss-ldapd
     question: 'libnss-ldapd/nsswitch'
     value: 'passwd, group, shadow'
     vtype: multiselect
