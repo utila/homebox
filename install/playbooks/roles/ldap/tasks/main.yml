@@ -77,13 +77,37 @@
     pkgs:
       - acl
       - slapd
-      - python-ldap
-      - python-passlib
+      - python3-ldap
+      - python3-passlib
       - ldapscripts
       - libpam-pwquality
       - cracklib-runtime
       - ldapvi
       - nscd
+  apt:
+    name: '{{ pkgs }}'
+    state: latest
+
+- name: Install the required packages (Python 2)
+  when:
+    - ansible_facts['distribution'] == "Debian"
+    - ansible_facts['distribution_major_version']|int == 9
+  vars:
+    pkgs:
+      - python-ldap
+      - python-passlib
+  apt:
+    name: '{{ pkgs }}'
+    state: latest
+
+- name: Install the required packages (Python 3)
+  when:
+    - ansible_facts['distribution'] == "Debian"
+    - ansible_facts['distribution_major_version']|int >= 10
+  vars:
+    pkgs:
+      - python3-ldap
+      - python3-passlib
   apt:
     name: '{{ pkgs }}'
     state: latest

@@ -37,6 +37,7 @@
   loop_control:
     loop_var: dir
 
+#first install oddjob and oddjob_mkhomedir?
 - name: Create the users home folders from /etc/skel
   tags: accounts
   command: 'mkhomedir_helper {{ user.uid }} 077 /etc/skel'
