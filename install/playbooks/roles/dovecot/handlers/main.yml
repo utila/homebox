@@ -27,5 +27,5 @@
 
 - name: Restart tomcat
   service:
-    name: tomcat8
+    name: tomcat9
     state: restarted
