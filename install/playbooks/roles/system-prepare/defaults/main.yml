@@ -14,6 +14,7 @@ system_required:
   - nginx
   - acl
   - certbot
+  - gnutls-bin
 
 # Packages to exclude
 system_excluded:
