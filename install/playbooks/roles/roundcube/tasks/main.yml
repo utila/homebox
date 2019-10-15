@@ -64,7 +64,7 @@
   tags: plugins, impersonate
   file:
     src: /etc/roundcube/plugins/dovecot_impersonate/config.inc.php
-    dest: /usr/share/roundcube/plugins/dovecot-impersonate/config.inc.php
+    dest: /usr/share/roundcube/plugins/dovecot_impersonate/config.inc.php
     state: link
     force: yes
 
