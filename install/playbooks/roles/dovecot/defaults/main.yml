@@ -21,7 +21,7 @@ dovecot:
     - dovecot-sieve
     - dovecot-ldap
   fts_packages:
-    - tomcat8
+    - tomcat9
     - solr-tomcat
     - dovecot-solr
     - poppler-utils

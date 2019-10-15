@@ -77,8 +77,6 @@
     pkgs:
       - acl
       - slapd
-      - python3-ldap
-      - python3-passlib
       - ldapscripts
       - libpam-pwquality
       - cracklib-runtime
