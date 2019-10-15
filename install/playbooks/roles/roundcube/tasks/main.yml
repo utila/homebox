@@ -136,7 +136,7 @@
   tags: config
   notify: Restart php-fpm
   replace:
-    path: /etc/php/7.0/fpm/php.ini
+    path: /etc/php/7.3/fpm/php.ini
     regexp: '{{ line.regexp }}'
     replace: '{{ line.replace }}'
   with_items:
