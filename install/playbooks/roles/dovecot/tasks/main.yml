@@ -40,6 +40,7 @@
     etype: user
     permissions: rx
     state: present
+    recursive: yes
   with_items:
     - /etc/letsencrypt
     - /etc/letsencrypt/archive
