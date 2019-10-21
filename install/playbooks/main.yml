@@ -67,8 +67,8 @@
 
 # Email server: MTA
 # TODO: replace opendkim and opendmarc with dkim-milter-python, python-dkim and/or python3-authheaders
-#- import_playbook: opendkim.yml
-#- import_playbook: opendmarc.yml
+- import_playbook: opendkim.yml
+- import_playbook: opendmarc.yml
 - import_playbook: cert-smtp.yml
 - import_playbook: postfix.yml
 
