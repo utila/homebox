@@ -10,7 +10,11 @@
 
 - name: Restart php-fpm
   service:
+<<<<<<< HEAD
     name: php7.3-fpm
+=======
+    name: 'php{{ php_version }}-fpm'
+>>>>>>> upstream/buster-dev
     state: restarted
 
 - name: Restart nginx
