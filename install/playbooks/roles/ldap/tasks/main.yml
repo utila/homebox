@@ -10,6 +10,7 @@
   file:
     path: '{{ backup_directory }}/ldap/'
     state: directory
+    mode: '0700'
 
 - name: Display LDAP tree settings
   tags: debug
@@ -29,7 +30,7 @@
 
 # Pre-configure the LDAP sever before instaling
 - name: Configure the LDAP administration account
-  when: slapd_stats.stat.exists == False
+  when: not slapd_stats.stat.exists
   no_log: true
   debconf:
     name: slapd
@@ -71,22 +72,17 @@
     loop_var: conf
 
 # Install LDAP server
+- name: Remove conflicting packages
+  tags: dpkg
+  apt:
+    name: '{{ packages.remove }}'
+    state: absent
+
 - name: Install the required packages
   tags: dpkg
-  vars:
-    pkgs:
-      - acl
-      - slapd
-      - python-ldap
-      - python-passlib
-      - ldapscripts
-      - libpam-pwquality
-      - cracklib-runtime
-      - ldapvi
-      - nscd
   apt:
-    name: '{{ pkgs }}'
-    state: latest
+    name: '{{ packages.install }}'
+    state: present
 
 # Changes in the database will be stored there
 - name: Create the ldap config changes folder
@@ -97,6 +93,7 @@
 ################################################################################
 # At this point, the certificates should have been created already #############
 # in order to have SSL and TLS encryption activated.                           #
+<<<<<<< HEAD
 - name: Allow slapd daemons to access the certificate directories
   notify: Restart the ldap service
   tags: cert
@@ -113,6 +110,14 @@
       - /etc/letsencrypt/live
   loop_control:
     loop_var: path
+=======
+- name: Set the default permissions for the imap certificate folders
+  import_role:
+    name: cert-perms
+  vars:
+    cert_dir: 'ldap.{{ network.domain }}'
+    entity_group: openldap
+>>>>>>> dev
 
 - name: Configure the ldap server for SSL / TLS
   notify: Restart the ldap service
@@ -126,7 +131,7 @@
   copy:
     src: renew-cert.sh
     dest: /etc/letsencrypt/renewal-hooks/deploy/10-ldap.sh
-    mode: 0755
+    mode: '0755'
 
 # When running in debug mode, use systemd debug facility
 - name: Update LDAP configuration for debugging
@@ -509,7 +514,7 @@
   template:
     src: nslcd.conf
     dest: /etc/nslcd.conf
-    mode: 0600
+    mode: '0600'
 
 - name: Copy the access policies on the server
   register: access_policies
@@ -538,7 +543,7 @@
   tags: apt
   apt:
     name: sudo
-    state: latest
+    state: present
 
 - name: Update the indexes
   when: index_defs.changed
@@ -594,7 +599,7 @@
   tags: apt
   apt:
     name: nslcd
-    state: latest
+    state: present
 
 # Password quality enforcement ================================================
 
@@ -635,4 +640,4 @@
   template:
     src: ldap-user-edit
     dest: /usr/local/sbin/ldap-user-edit
-    mode: 0700
+    mode: '0700'

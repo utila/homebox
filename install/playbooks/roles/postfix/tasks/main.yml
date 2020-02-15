@@ -11,6 +11,7 @@
 ################################################################################
 # At this point, the certificates should have been created already #############
 # in order to have SSL and TLS encryption activated.                           #
+<<<<<<< HEAD
 - name: Allow postfix to access the certificate directories
   tags: postfix,ssl
   notify: Restart postfix
@@ -27,13 +28,21 @@
     - /etc/letsencrypt/live
   loop_control:
     loop_var: path
+=======
+- name: Set the default permissions for the smtp certificate folders
+  import_role:
+    name: cert-perms
+  vars:
+    cert_dir: 'smtp.{{ network.domain }}'
+    entity_group: postfix
+>>>>>>> dev
 
 - name: Copy the certificate renewal hook
   tags: cert
   copy:
     src: renew-cert.sh
     dest: /etc/letsencrypt/renewal-hooks/deploy/20-postfix.sh
-    mode: 0755
+    mode: '0755'
 
 #                                                                              #
 # End of TLS / SSL Configuration ###############################################
@@ -112,40 +121,6 @@
     loop_var: rule
 
 # AppArmor configuration ======================================================
-- name: Set postfix AppAromor profiles list
-  tags: security, apparmor
-  set_fact:
-    postfix_apparmor_profiles:
-    - usr.lib.postfix.anvil
-    - usr.lib.postfix.bounce
-    - usr.lib.postfix.cleanup
-    - usr.lib.postfix.discard
-    - usr.lib.postfix.error
-    - usr.lib.postfix.flush
-    - usr.lib.postfix.lmtp
-    - usr.lib.postfix.local
-    - usr.lib.postfix.master
-    - usr.lib.postfix.nqmgr
-    - usr.lib.postfix.oqmgr
-    - usr.lib.postfix.pickup
-    - usr.lib.postfix.pipe
-    - usr.lib.postfix.proxymap
-    - usr.lib.postfix.qmgr
-    - usr.lib.postfix.qmqpd
-    - usr.lib.postfix.scache
-    - usr.lib.postfix.showq
-    - usr.lib.postfix.smtp
-    - usr.lib.postfix.smtpd
-    - usr.lib.postfix.spawn
-    - usr.lib.postfix.tlsmgr
-    - usr.lib.postfix.trivial-rewrite
-    - usr.lib.postfix.verify
-    - usr.lib.postfix.virtual
-    - usr.sbin.sendmail
-    - usr.sbin.postdrop
-    - usr.sbin.postqueue
-    - usr.sbin.postalias
-
 - name: Install some postfix AppArmor profile
   tags: security, apparmor
   notify: Restart postfix
@@ -184,13 +159,47 @@
     path: /var/log/mail.warn
     state: touch
 
+# Some misconfigured servers are generating a lot of errors
+# While this is happening before authentication, this generates
+# a lot of noise and can be problematic to extract
+# useful information from log files
+- name: Add custom postfix fail2ban rule to reduce noise
+  tags: security, fail2ban
+  notify: Restart fail2ban
+  template:
+    src: fail2ban-noise-reduction.conf
+    dest: /etc/fail2ban/filter.d/postfix-nr.conf
+
+- name: Add sections in the jail config
+  tags: security, fail2ban
+  notify: Restart fail2ban
+  ini_file:
+    path: /etc/fail2ban/jail.conf
+    section: 'postfix-nr'
+    option: '{{ option.name }}'
+    value: '{{ option.value }}'
+    create: yes
+  with_items:
+    - name: port
+      value: smtp,465,submission
+    - name: logpath
+      value: '%(postfix_log)s'
+    - name: backend
+      value: '%(postfix_backend)s'
+    - name: enabled
+      value: True
+    - name: bantime
+      value: '{{ mail.fail2ban.time }}'
+  loop_control:
+    loop_var: option
+
 - name: Activate fail2ban on postfix
   tags: security, fail2ban
   notify: Restart fail2ban
   ini_file:
     path: /etc/fail2ban/jail.conf
-    option: enabled
     section: '{{ section }}'
+    option: enabled
     value: true
     create: no
   with_items:
@@ -217,6 +226,24 @@
     loop_var: section
 
 # Create entries for the DNS server ===========================================
+
+# Use IP addresses as SPF mechanisms for the server itself
+- name: Add the external IP address as SPF sender
+  tags: spf
+  set_fact:
+    spf_senders: '{{ "ip6:" + external_ip if external_ip | ipv6 else "ip4:" + external_ip }}'
+
+- name: Add the backup IP address as SPF sender
+  when: backup_ip is defined and (backup_ip | length > 0)
+  tags: spf
+  set_fact:
+    spf_senders: '{{ spf_senders }} {{ "ip6:" + backup_ip if backup_ip | ipv6 else "ip4:" + backup_ip }}'
+
+- name: Add the user configured extra senders to the SPF record
+  when: mail.extra_senders
+  tags: spf
+  set_fact:
+    spf_senders: '{{ spf_senders }} {{ mail.extra_senders | join(" ") }}'
 
 # Use "soft fail" in development mode
 - name: Set the SPF qualifier as "soft fail"
