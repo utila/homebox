@@ -1,6 +1,7 @@
 # Ignore everything on the config folder, except sample and default files
 config/*
 !config/defaults.yml
+!config/*-default*.yml
 !config/*-example.yml
 
 # Ignore ansible error files
@@ -24,3 +25,6 @@ backup/*
 # Allow to include modules excluded from the repository
 modules/*
 !modules/readme.md
+
+# Ignore python3 cache directories
+__pycache__/

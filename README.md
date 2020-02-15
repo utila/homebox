@@ -1,3 +1,6 @@
+__Please, note this branch will receive only bug fixes and security updates. all the developments are now focused on the
+[Debian Buster branch](https://github.com/progmaticltd/homebox/tree/buster-dev).__
+
 A set of Ansible scripts to setup a secure email and personal files server. This project is for you if:
 
 - You are interested to host your emails yourself, for privacy, security or any other reason.
@@ -167,6 +170,7 @@ official documentation.
 - Optional master user creation, e.g. for families with children or moderated communities.
 - Server side full text search inside emails, attached documents and files and
   compressed archives, with better results than GMail.
+- Detailed weekly, monthly and yearly access report per country, ISP, IP addresses, etc.
 - Optional Roundcube webmail with sieve filters management, password change form, automatic identity
   creation, master account access, etc.
 - Optional SOGo webmail with sieve filters management, password change form, Calendar and Address book management, GUI
@@ -194,11 +198,8 @@ official documentation.
 - [Tor](https://www.torproject.org/) installation out of the box with possible customisation.
 - [Privoxy](https://www.privoxy.org/) easy installation, with adblock rules daily synchronisation, and optional tor
   chaining.
-- Embedded DNS server with DNSSEC and SSHFP (SSH fingerprint) records support
-- External IP address detection.
 - Static web site skeleton configuration, with https certificates and A+ security grade by default.
 - Personal backup server for each user, using borgbackup.
-- [Gogs git server](https://gogs.io/), a fast and lightweight git server written in Golang.
 - [Transmission daemon](https://transmissionbt.com/), accessible over https, public or private over your LAN. Files can
   be downloaded directly with a web browser, using LDAP credentials for authentication or whitelisted IP addresses
   (e.g. LAN).

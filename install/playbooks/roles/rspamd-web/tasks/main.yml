@@ -13,7 +13,7 @@
     dest: '/etc/nginx/sites-available/rspamd.{{ network.domain }}.conf'
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
 
 - name: Copy rspamd configuration
   tags: nginx
@@ -24,7 +24,6 @@
     src: '/etc/nginx/sites-available/rspamd.{{ network.domain }}.conf'
     dest: '/etc/nginx/sites-enabled/rspamd.{{ network.domain }}.conf'
     state: link
-
 
 # AppArmor configuration ======================================================
 
